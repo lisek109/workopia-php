@@ -1,19 +1,22 @@
 <?php
-
+require __DIR__ . '/../vendor/autoload.php';
 require '../helpers.php';
 
-$routes = [
-    '/' => 'controllers/home.php',
-    '/listings' => 'controllers/listings/index.php',
-    '/listings/create' => 'controllers/listings/create.php',
-    '404' => 'controllers/error/404.php'
-];
+use Framework\Router;
 
 
-$uri = $_SERVER['REQUEST_URI'];
+// spl_autoload_register(function ($class) {
+//     $path = basePath('Framework/' . $class . 'php');
+//     if (file_exists($path)) {
+//         require $path;
+//     }
+// });
 
-if (array_key_exists($uri, $routes)) {
-    require(basePath($routes[$uri]));
-} else {
-    require basePath($routes['404']);
-}
+$router = new Router();
+
+$routes = require basePath('routes.php');
+
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
+
+$router->route($uri, $method);
